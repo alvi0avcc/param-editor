@@ -157,3 +157,10 @@ ParamEditor.registerParamType('date', ({ param, value, onChange }) => (
 - npm
 
 Все зависимости уже описаны в `package.json`.
+
+---
+
+## Результаты тестов
+
+<img width="407" height="171" alt="Screenshot 2026-02-02 212508" src="https://github.com/user-attachments/assets/f658ad2f-228f-4c41-85c9-4ec2d47ee2e4" />
+
