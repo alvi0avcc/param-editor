@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useRef } from "react";
+import ParamEditor from "./paramEditor/";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
+const App: React.FC = () => {
+  const paramEditorRef = useRef<ParamEditor>(null);
+
+  const params = [
+    { id: 1, name: "Назначение", type: "string" as const },
+    { id: 2, name: "Длина", type: "string" as const },
+    { id: 3, name: "Цвет", type: "string" as const },
+    { id: 4, name: "Размер", type: "string" as const },
+  ];
+
+  const model = {
+    paramValues: [
+      { paramId: 1, value: "повседневное" },
+      { paramId: 2, value: "макси" },
+      { paramId: 3, value: "синий" },
+      { paramId: 4, value: "XL" },
+    ],
+    colors: [
+      { id: 1, name: "Красный" },
+      { id: 2, name: "Синий" },
+      { id: 3, name: "Зеленый" },
+    ],
+  };
+
+  const handleResetCallback = () => {
+    console.log("Reset callback called from ParamEditor");
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="App">
+      <h1>Редактор параметров товара</h1>
 
-export default App
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: "20px",
+          justifyContent: "center",
+        }}
+      >
+        <ParamEditor
+          ref={paramEditorRef}
+          params={params}
+          model={model}
+          onReset={handleResetCallback}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default App;
