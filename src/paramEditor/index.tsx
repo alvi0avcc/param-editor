@@ -136,6 +136,28 @@ class ParamEditor extends Component<Props, State> {
     }));
   };
 
+  public resetToInitial(): void {
+    this.setState({
+      paramValues: this.initializeParamValues(
+        this.props.params,
+        this.props.model.paramValues,
+      ),
+    });
+
+    if (this.props.onReset) {
+      this.props.onReset();
+    }
+  }
+
+  public resetToEmpty(): void {
+    this.setState({
+      paramValues: this.props.params.map((param) => ({
+        paramId: param.id,
+        value: this.getDefaultValue(param.type),
+      })),
+    });
+  }
+
   public getModel(): Model {
     return {
       paramValues: [...this.state.paramValues],

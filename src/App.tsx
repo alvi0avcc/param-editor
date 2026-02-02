@@ -26,6 +26,28 @@ const App: React.FC = () => {
     ],
   };
 
+  const handleGetModel = () => {
+    if (paramEditorRef.current) {
+      const currentModel = paramEditorRef.current.getModel();
+      console.log("Current model:", currentModel);
+      alert(JSON.stringify(currentModel, null, 2));
+    }
+  };
+
+  const handleReset = () => {
+    if (paramEditorRef.current) {
+      paramEditorRef.current.resetToInitial();
+      console.log("Model reset to initial values");
+    }
+  };
+
+  const handleResetToEmpty = () => {
+    if (paramEditorRef.current) {
+      paramEditorRef.current.resetToEmpty();
+      console.log("Model reset to empty values");
+    }
+  };
+
   const handleResetCallback = () => {
     console.log("Reset callback called from ParamEditor");
   };
@@ -48,6 +70,21 @@ const App: React.FC = () => {
           model={model}
           onReset={handleResetCallback}
         />
+
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            flexWrap: "wrap",
+            justifyContent: "space-around",
+          }}
+        >
+          <button onClick={handleGetModel}>📋 Получить модель</button>
+
+          <button onClick={handleReset}>🔄 Сбросить к исходным</button>
+
+          <button onClick={handleResetToEmpty}>🗑️ Сбросить к пустым</button>
+        </div>
       </div>
     </div>
   );
