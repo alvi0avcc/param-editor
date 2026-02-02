@@ -1,73 +1,159 @@
-# React + TypeScript + Vite
+# Инструкция по установке и использованию компонента `paramEditor`
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Описание
 
-Currently, two official plugins are available:
+`paramEditor` — React-компонент для визуального редактирования списка параметров товара. Позволяет пользователю вводить значения параметров, получать текущую модель данных, а также сбрасывать значения к исходным либо пустым.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Установка и запуск
 
-## React Compiler
+1. **Клонируйте репозиторий:**
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+   ```bash
+   git clone https://github.com/alvi0avcc/param-editor
+   cd param-editor
+   ```
 
-## Expanding the ESLint configuration
+2. **Установите зависимости:**
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+   ```bash
+   npm install
+   ```
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+3. **Запустите приложение в режиме разработки:**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+   ```bash
+   npm run dev
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+   После запуска приложение будет открыто по адресу, типа: `http://localhost:5173`
+
+## Использование компонента
+
+### Интерфейсы props
+
+- `params: Param[]` — Список параметров (id, name, type, опционально options)
+- `model: Model` — Модель с текущими значениями параметров и цветами
+- `onReset?: () => void` — (Опционально) Колбэк после сброса параметров
+
+#### Типы параметров (TypeScript)
+
+```ts
+export type ParamType = "string" | "number";
+export interface Param {
+  id: number;
+  name: string;
+  type: ParamType;
+  options?: string[];
+}
+export interface ParamValue {
+  paramId: number;
+  value: string;
+}
+export interface Color {
+  id: number;
+  name: string;
+}
+export interface Model {
+  paramValues: ParamValue[];
+  colors: Color[];
+}
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Пример использования в приложении
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```tsx
+import React, { useRef } from "react";
+import ParamEditor from "./paramEditor/";
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+const params = [
+  { id: 1, name: "Назначение", type: "string" },
+  { id: 2, name: "Длина", type: "string" },
+  { id: 3, name: "Цвет", type: "string" },
+  { id: 4, name: "Размер", type: "string" },
+];
+const model = {
+  paramValues: [
+    { paramId: 1, value: "повседневное" },
+    { paramId: 2, value: "макси" },
+    { paramId: 3, value: "синий" },
+    { paramId: 4, value: "XL" },
+  ],
+  colors: [
+    { id: 1, name: "Красный" },
+    { id: 2, name: "Синий" },
+    { id: 3, name: "Зеленый" },
+  ],
+};
+
+const App = () => {
+  const paramEditorRef = useRef(null);
+
+  const handleGetModel = () => {
+    if (paramEditorRef.current) {
+      const currentModel = paramEditorRef.current.getModel();
+      alert(JSON.stringify(currentModel, null, 2));
+    }
+  };
+
+  const handleReset = () => {
+    paramEditorRef.current?.resetToInitial();
+  };
+  const handleResetToEmpty = () => {
+    paramEditorRef.current?.resetToEmpty();
+  };
+
+  return (
+    <div>
+      <ParamEditor
+        ref={paramEditorRef}
+        params={params}
+        model={model}
+        onReset={() => console.log("Reset done")}
+      />
+      <button onClick={handleGetModel}>Получить модель</button>
+      <button onClick={handleReset}>Сбросить к исходным</button>
+      <button onClick={handleResetToEmpty}>Сбросить к пустым</button>
+    </div>
+  );
+};
 ```
+
+---
+
+## Публичные методы компонента (через ref)
+
+- **getModel()** — возвращает актуальную модель (значения всех параметров и список цветов)
+- **resetToInitial()** — сбрасывает значения параметров к исходным (из model.paramValues)
+- **resetToEmpty()** — сбрасывает значения параметров к пустым ("", "0")
+
+---
+
+## Кастомизация типов параметров
+
+Для добавления поддержки новых типов параметров используйте статический метод:
+
+```ts
+ParamEditor.registerParamType("newType", CustomComponent);
+```
+
+Например регистрируем новый тип параметра "date"
+
+```
+ParamEditor.registerParamType('date', ({ param, value, onChange }) => (
+  <input
+    type="date"
+    value={value}
+    onChange={(e) => onChange(param.id, e.target.value)}
+  />
+));
+```
+
+---
+
+## Требования
+
+- React 19+
+- Vite
+- npm
+
+Все зависимости уже описаны в `package.json`.
